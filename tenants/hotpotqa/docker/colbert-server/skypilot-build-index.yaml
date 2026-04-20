@@ -1,0 +1,141 @@
+name: hotpotqa-colbert-index-build
+
+resources:
+  infra: k8s/gpu1
+  image_id: docker:nvcr.io/nvidia/pytorch:23.10-py3
+  accelerators: H100:1
+  memory: 128GB
+
+config:
+  kubernetes:
+    kueue:
+      local_queue_name: skypilot-jobs-1-gpu
+    pod_config:
+      metadata:
+        labels:
+          kueue.x-k8s.io/priority-class: 1-gpu
+      spec:
+        containers:
+          - volumeMounts:
+              - mountPath: /shared-storage
+                name: shared-storage
+        volumes:
+          - name: shared-storage
+            persistentVolumeClaim:
+              claimName: csi-pvc-mounted
+
+# Sync build scripts into ~/sky_workdir/ on the cluster
+workdir: .
+
+run: |
+  set -euxo pipefail
+
+  PVC_DIR=/shared-storage/hotpotqa/colbert-data
+  PVC_CACHE=/shared-storage/hotpotqa/cache
+  mkdir -p /data "$PVC_DIR" "$PVC_CACHE/pip"
+
+  # Use PVC-backed pip cache so repeated jobs don't re-download packages
+  export PIP_CACHE_DIR="$PVC_CACHE/pip"
+
+  # Point faiss/torch at system CUDA before any Python execution
+  export LD_LIBRARY_PATH=/usr/local/cuda/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+
+  # Tell faiss-gpu-cu12 to skip its pip-based cublas/cuda preloading via ctypes.
+  # Without this, faiss's loader.py tries importlib.metadata to find nvidia-cublas-cu12
+  # and load its .so via ctypes — which either fails (PackageNotFoundError in spawned
+  # subprocesses) or loads a version-mismatched libcublas.so.12 from pip. With this
+  # env var, faiss falls through to the system CUDA in LD_LIBRARY_PATH instead.
+  export _FAISS_WHEEL_DISABLE_CUDA_PRELOAD=1
+
+  # ── Install system deps ──
+  apt-get update && apt-get install -y --no-install-recommends git g++ curl swig
+
+  # ── Fix NGC image conflicts ──
+  # Pin numpy<2: NGC torch was compiled against NumPy 1.x; letting pip pull
+  # NumPy 2.x causes "compiled using NumPy 1.x cannot run in NumPy 2.x" errors.
+  pip install "numpy<2"
+
+  # ── Build faiss-gpu from source (pip wheel lacks sm_90 kernels for H100) ──
+  # Cache the installed faiss package dir on PVC so subsequent runs skip the build.
+  SITE_PACKAGES=$(python -c "import site; print(site.getsitepackages()[0])")
+  FAISS_STAMP="$PVC_CACHE/faiss-gpu-1.9.0-sm90-cp310.stamp"
+  FAISS_CACHED="$PVC_CACHE/faiss-gpu-1.9.0-sm90-cp310"
+  if [ -f "$FAISS_STAMP" ] && [ -d "$FAISS_CACHED" ]; then
+    echo "Using cached faiss-gpu build from PVC"
+    cp -r "$FAISS_CACHED" "$SITE_PACKAGES/faiss"
+  else
+    echo "Building faiss-gpu from source for sm_90 (H100)..."
+    git clone --depth 1 --branch v1.9.0 https://github.com/facebookresearch/faiss.git /tmp/faiss
+    cmake -B /tmp/faiss/build -S /tmp/faiss \
+      -DFAISS_ENABLE_GPU=ON \
+      -DFAISS_ENABLE_PYTHON=ON \
+      -DCMAKE_CUDA_ARCHITECTURES="90" \
+      -DBUILD_TESTING=OFF \
+      -DFAISS_ENABLE_C_API=OFF \
+      -DPython_EXECUTABLE="$(which python)"
+    make -C /tmp/faiss/build -j"$(nproc)" faiss swigfaiss
+    (cd /tmp/faiss/build/faiss/python && pip install .)
+    # Cache the installed package to PVC
+    FAISS_SITE=$(python -c "import faiss; import os; print(os.path.dirname(faiss.__file__))")
+    rm -rf "$FAISS_CACHED"
+    cp -r "$FAISS_SITE" "$FAISS_CACHED"
+    touch "$FAISS_STAMP"
+    echo "Cached faiss-gpu build to PVC"
+    rm -rf /tmp/faiss
+  fi
+
+  # ── Install Python deps ──
+  # --no-deps for colbert-ai prevents pulling pip faiss-cpu (would shadow faiss-gpu)
+  pip install --no-deps "colbert-ai==0.2.20"
+
+  # Install colbert-ai's remaining runtime deps + transformers
+  pip install \
+    "transformers>=4.20,<4.41" \
+    datasets tqdm ujson gitpython ninja flask
+
+  # ── Download ColBERTv2 checkpoint (cached on PVC) ──
+  if [ -d "$PVC_CACHE/colbertv2.0" ]; then
+    echo "Using cached ColBERTv2 checkpoint from PVC"
+    cp -r "$PVC_CACHE/colbertv2.0" /data/colbertv2.0
+  else
+    curl -fSL -o /tmp/colbertv2.tar.gz \
+      "https://downloads.cs.stanford.edu/nlp/data/colbert/colbertv2/colbertv2.0.tar.gz"
+    tar -xzf /tmp/colbertv2.tar.gz -C /data/
+    rm /tmp/colbertv2.tar.gz
+    # Cache to PVC for future runs
+    cp -r /data/colbertv2.0 "$PVC_CACHE/colbertv2.0"
+    echo "Cached ColBERTv2 checkpoint to PVC"
+  fi
+
+  # ── Get collection.tsv (cached on PVC after first build) ──
+  if [ -f "$PVC_DIR/collection.tsv" ]; then
+    echo "Using cached collection.tsv from PVC"
+    cp "$PVC_DIR/collection.tsv" /data/collection.tsv
+  else
+    echo "Building collection.tsv from raw abstracts (first run)..."
+    curl -fSL -o /data/abstracts.tar.bz2 \
+      "https://nlp.stanford.edu/projects/hotpotqa/enwiki-20171001-pages-meta-current-withlinks-abstracts.tar.bz2"
+    ABSTRACTS_TAR=/data/abstracts.tar.bz2 OUTPUT_TSV=/data/collection.tsv \
+      python build_collection.py
+    rm /data/abstracts.tar.bz2
+    # Cache to PVC for future runs
+    cp /data/collection.tsv "$PVC_DIR/collection.tsv"
+    echo "Cached collection.tsv to PVC"
+  fi
+
+  # ── Verify faiss import ──
+  python -c "import faiss; print('faiss', faiss.__version__)"
+
+  # ── Build ColBERT index on GPU ──
+  echo "=== Building ColBERT index ==="
+  nvidia-smi
+  python build_index.py
+
+  # ── Copy results to PVC ──
+  echo "=== Copying index to PVC ==="
+  rm -rf "$PVC_DIR/index"
+  cp -r /data/index "$PVC_DIR/index"
+
+  echo "=== Done ==="
+  ls -lh "$PVC_DIR/"
+  du -sh "$PVC_DIR/index/"

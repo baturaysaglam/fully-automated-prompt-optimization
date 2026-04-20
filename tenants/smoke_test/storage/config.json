@@ -1,0 +1,12 @@
+{
+  "tenant_id": "smoke_test",
+  "gcs": {
+    "bucket": "your-gcs-bucket-name",
+    "prefix": "tenants/smoke_test"
+  },
+  "paths": {
+    "raw_local": "tenants/smoke_test/source_artifacts",
+    "derived_local": "tenants/smoke_test/datasets",
+    "code_local": "tenants/smoke_test/code"
+  }
+}

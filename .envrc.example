@@ -1,0 +1,14 @@
+# Copy this file to .envrc and fill in your values.
+# If using direnv, run `direnv allow` after creating .envrc.
+
+# Baseten provider
+export BASETEN_API_KEY="your-baseten-api-key"
+
+# Sagemaker / API Gateway provider
+export X_API_KEY="your-sagemaker-api-key"
+
+# OpenAI provider
+export OPENAI_API_KEY="your-openai-api-key"
+
+# GitHub (for PR automation, optional)
+export GITHUB_PAT_TOKEN="your-github-pat-token"

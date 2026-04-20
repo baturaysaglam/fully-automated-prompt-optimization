@@ -1,0 +1,22 @@
+{"level": "prompt", "variant": "variant-001", "train_score": 43.33, "test_score": 46.67, "test_se": 2.00, "description": "Baseline CoT: Please think step by step and then solve the task."}
+{"level": "prompt", "variant": "variant-002", "train_score": 48.89, "description": "Format + verify + leading zeros"}
+{"level": "prompt", "variant": "variant-003", "train_score": 52.22, "description": "Expert + format + verify"}
+{"level": "prompt", "variant": "variant-004", "train_score": 48.89, "description": "Solve-twice + format (no expert)"}
+{"level": "prompt", "variant": "variant-005", "train_score": 53.33, "description": "Careful + double-check + expert"}
+{"level": "prompt", "variant": "variant-006", "train_score": 44.44, "description": "Sub-problems + expert -- WORSE than baseline, decomposition hurts"}
+{"level": "prompt", "variant": "variant-007", "train_score": 53.33, "description": "Error-aware verification + expert"}
+{"level": "prompt", "variant": "variant-008", "train_score": 52.22, "description": "Combined v005+v007 -- more verbose, no gain"}
+{"level": "prompt", "variant": "variant-009", "train_score": 52.22, "description": "Ultra-minimal expert -- too terse"}
+{"level": "prompt", "variant": "variant-010", "train_score": 56.67, "test_score": 47.92, "test_se": 1.40, "description": "Solve-twice on v005 base -- best train"}
+{"level": "prompt", "variant": "variant-011", "train_score": 48.89, "description": "v010 + error awareness tips -- too verbose, hurts"}
+{"level": "prompt", "variant": "variant-012", "train_score": 54.44, "description": "v010 ablation (no read twice) -- read twice helps"}
+{"level": "prompt", "variant": "variant-013", "train_score": 55.56, "test_score": 49.58, "test_se": 0.99, "description": "v010 + range check -- BEATS GEPA, lowest variance"}
+{"level": "prompt", "variant": "variant-014", "train_score": 50.00, "description": "Thorough step verification instead of solve-twice -- worse"}
+{"level": "prompt", "variant": "variant-015", "train_score": 53.33, "description": "Identify concepts + solve-twice"}
+{"level": "prompt", "variant": "variant-016", "train_score": 52.22, "description": "Compact v010 -- too compact"}
+{"level": "prompt", "variant": "variant-017", "train_score": 54.44, "description": "v010 + plan approach"}
+{"level": "prompt", "variant": "variant-018", "train_score": 48.89, "description": "v010 + show full reasoning -- hurts"}
+{"level": "prompt", "variant": "variant-019", "train_score": 56.67, "description": "AIME-specialist + v010 base -- ties v010"}
+{"level": "prompt", "variant": "variant-020", "train_score": 48.89, "description": "Think deeply + verify -- no solve-twice, worse"}
+{"level": "prompt", "variant": "variant-021", "train_score": 56.67, "test_score": 45.84, "test_se": 2.24, "description": "v010 + answer form + range -- high test variance, poor"}
+{"level": "prompt", "exhaustion_reason": "resolved", "final_score": 49.58, "variants_tried": 21, "notes": "v013 beats GEPA target (49.06). Best test: 49.58 +/- 0.99. Budget: 21/30 variants used."}

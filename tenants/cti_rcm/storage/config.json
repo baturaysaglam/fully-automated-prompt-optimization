@@ -1,0 +1,12 @@
+{
+  "tenant_id": "cti_rcm",
+  "gcs": {
+    "bucket": "your-gcs-bucket-name",
+    "prefix": "tenants/cti_rcm"
+  },
+  "paths": {
+    "raw_local": "tenants/cti_rcm/source_artifacts",
+    "derived_local": "tenants/cti_rcm/datasets",
+    "code_local": "tenants/cti_rcm/code"
+  }
+}

@@ -1,0 +1,72 @@
+# =============================================================================
+# Stage 1: Download raw HotpotQA abstracts and build collection.tsv
+# =============================================================================
+FROM python:3.11-slim AS data-prep
+
+RUN apt-get update && apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /data
+
+# Download raw Wikipedia abstracts from the HotpotQA project
+RUN curl -fSL -o abstracts.tar.bz2 \
+    "https://nlp.stanford.edu/projects/hotpotqa/enwiki-20171001-pages-meta-current-withlinks-abstracts.tar.bz2"
+
+COPY build_collection.py /build_collection.py
+RUN python /build_collection.py && rm abstracts.tar.bz2
+
+# =============================================================================
+# Stage 2: Build ColBERT index from collection.tsv
+# =============================================================================
+FROM python:3.11-slim AS index-build
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl git g++ libgomp1 && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /data
+
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Download and extract ColBERTv2 checkpoint
+RUN curl -fSL -o colbertv2.tar.gz \
+    "https://downloads.cs.stanford.edu/nlp/data/colbert/colbertv2/colbertv2.0.tar.gz" && \
+    tar -xzf colbertv2.tar.gz && \
+    rm colbertv2.tar.gz
+
+# Bring in the collection from stage 1
+COPY --from=data-prep /data/collection.tsv /data/collection.tsv
+
+COPY build_index.py /build_index.py
+RUN python /build_index.py
+
+# Remove checkpoint after indexing to save space
+RUN rm -rf /data/colbertv2.0
+
+# =============================================================================
+# Stage 3: Lean runtime image
+# =============================================================================
+FROM python:3.11-slim
+
+# libgomp1: FAISS OpenMP support
+# git: colbert-ai transitive dep (GitPython)
+# g++ ninja-build: ColBERT JIT-compiles segmented_maxsim_cpp on first load
+RUN apt-get update && apt-get install -y --no-install-recommends git libgomp1 g++ ninja-build && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY start_colbert_server.py .
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
+
+# Bake index + collection from the index-build stage
+COPY --from=index-build /data /app/data
+
+EXPOSE 8893
+
+ENTRYPOINT ["./entrypoint.sh"]
