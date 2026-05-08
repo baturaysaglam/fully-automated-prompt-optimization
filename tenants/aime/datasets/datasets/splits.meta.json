@@ -1,0 +1,9 @@
+{
+  "benchmark": "AIMEBench",
+  "dataset_mode": "lite",
+  "fingerprint_sha256": "9d9d16aac27cb4f6239a4f73393a7ba2537216e74eea2e2ccb13408410dea638",
+  "gepa_artifact_git_sha": "cbefbc1aa0f43dd39874ec4bf42211365dbda42e",
+  "test_size": 150,
+  "train_size": 45,
+  "val_size": 45
+}

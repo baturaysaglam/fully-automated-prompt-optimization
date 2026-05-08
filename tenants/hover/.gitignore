@@ -1,0 +1,6 @@
+# Eval outputs (local-only)
+evals/
+
+# Source artifacts (protected, tracked separately)
+source_artifacts/*
+!source_artifacts/.gitkeep

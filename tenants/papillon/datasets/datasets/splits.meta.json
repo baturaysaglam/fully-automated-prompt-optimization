@@ -1,0 +1,9 @@
+{
+  "benchmark": "Papillon",
+  "dataset_mode": "lite",
+  "fingerprint_sha256": "3bb71d66a5fd2ba77506379184d898f723f111b5da18d53747c5b110868d40a8",
+  "gepa_artifact_git_sha": "cbefbc1aa0f43dd39874ec4bf42211365dbda42e",
+  "test_size": 221,
+  "train_size": 111,
+  "val_size": 111
+}

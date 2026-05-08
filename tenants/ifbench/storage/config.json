@@ -1,0 +1,12 @@
+{
+  "tenant_id": "ifbench",
+  "gcs": {
+    "bucket": "your-gcs-bucket-name",
+    "prefix": "tenants/ifbench"
+  },
+  "paths": {
+    "raw_local": "tenants/ifbench/source_artifacts",
+    "derived_local": "tenants/ifbench/datasets",
+    "code_local": "tenants/ifbench/code"
+  }
+}

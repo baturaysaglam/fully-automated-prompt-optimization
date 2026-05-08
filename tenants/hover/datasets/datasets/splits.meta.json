@@ -1,0 +1,9 @@
+{
+  "benchmark": "hoverBench",
+  "dataset_mode": "lite",
+  "fingerprint_sha256": "29a1efa6209a0295338daa7d8a3b599801b4ba7ed41de14f7f81f96db7cc0cc1",
+  "gepa_artifact_git_sha": "cbefbc1aa0f43dd39874ec4bf42211365dbda42e",
+  "test_size": 300,
+  "train_size": 150,
+  "val_size": 300
+}

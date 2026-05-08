@@ -1,0 +1,12 @@
+{
+  "tenant_id": "hover",
+  "gcs": {
+    "bucket": "your-gcs-bucket-name",
+    "prefix": "tenants/hover"
+  },
+  "paths": {
+    "raw_local": "tenants/hover/source_artifacts",
+    "derived_local": "tenants/hover/datasets",
+    "code_local": "tenants/hover/code"
+  }
+}

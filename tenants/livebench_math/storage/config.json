@@ -1,0 +1,12 @@
+{
+  "tenant_id": "livebench_math",
+  "gcs": {
+    "bucket": "your-gcs-bucket-name",
+    "prefix": "tenants/livebench_math"
+  },
+  "paths": {
+    "raw_local": "tenants/livebench_math/source_artifacts",
+    "derived_local": "tenants/livebench_math/datasets",
+    "code_local": "tenants/livebench_math/code"
+  }
+}

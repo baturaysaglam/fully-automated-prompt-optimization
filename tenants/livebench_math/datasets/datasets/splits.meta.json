@@ -1,0 +1,9 @@
+{
+  "benchmark": "LiveBenchMathBench",
+  "dataset_mode": "lite",
+  "fingerprint_sha256": "1b6a4b368883a5d3dde5b951e0616ed811b7aa0b684fa8639ad1bb46aa32b9e9",
+  "gepa_artifact_git_sha": "cbefbc1aa0f43dd39874ec4bf42211365dbda42e",
+  "test_size": 126,
+  "train_size": 121,
+  "val_size": 121
+}

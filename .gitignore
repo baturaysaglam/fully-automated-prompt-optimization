@@ -39,3 +39,23 @@ tenants/*/source_artifacts/*
 !tenants/*/source_artifacts/.gitkeep
 tenants/*/datasets/*
 !tenants/*/datasets/.gitkeep
+
+# GEPA-baseline tenants: commit splits + fingerprint for byte-level lock
+!tenants/aime/datasets/datasets/
+!tenants/aime/datasets/datasets/*.jsonl
+!tenants/aime/datasets/datasets/splits.meta.json
+!tenants/hover/datasets/datasets/
+!tenants/hover/datasets/datasets/*.jsonl
+!tenants/hover/datasets/datasets/splits.meta.json
+!tenants/livebench_math/datasets/datasets/
+!tenants/livebench_math/datasets/datasets/*.jsonl
+!tenants/livebench_math/datasets/datasets/splits.meta.json
+!tenants/papillon/datasets/datasets/
+!tenants/papillon/datasets/datasets/*.jsonl
+!tenants/papillon/datasets/datasets/splits.meta.json
+!tenants/ifbench/datasets/datasets/
+!tenants/ifbench/datasets/datasets/*.jsonl
+!tenants/ifbench/datasets/datasets/splits.meta.json
+
+# Claude Code optimization run state (transient, not committed)
+.claude/state/

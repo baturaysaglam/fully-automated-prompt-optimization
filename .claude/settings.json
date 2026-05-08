@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "SubagentStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -m src.hephaestus.optimization.call_tracker_hook start"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -m src.hephaestus.optimization.call_tracker_hook end"
+          }
+        ]
+      }
+    ]
+  }
+}
