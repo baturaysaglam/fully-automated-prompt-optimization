@@ -1,0 +1,9 @@
+{
+  "tenant_id": "papillon",
+  "local_only": true,
+  "paths": {
+    "raw_local": "tenants/papillon/source_artifacts",
+    "derived_local": "tenants/papillon/datasets",
+    "code_local": "tenants/papillon/code"
+  }
+}

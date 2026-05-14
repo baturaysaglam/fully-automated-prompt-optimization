@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+
+# Local-only operational artifacts (never checked in)
+tenants/*/evals/
+tenants/*/configs/**
+!tenants/*/configs/.gitkeep
+!tenants/hotpotqa/configs/local-chain-variant001.json
+!tenants/hotpotqa/configs/remote-chain-variant001.json
+!tenants/hotpotqa/configs/local-chain-variant001-train.json
+!tenants/hotpotqa/configs/local-chain-variant001-test.json
+!tenants/hotpotqa/configs/remote-chain-variant001-train.json
+!tenants/hotpotqa/configs/remote-chain-variant001-test.json
+tenants/*/reports/**
+!tenants/*/reports/.gitkeep
+reports/evals/tmp/
+
+# Environment (contains API keys — never commit)
+.envrc
+
+# Internal-only docs and scrubbers (contain references to internal infrastructure)
+SYNC_GUIDE.md
+scripts/check_oss_safety.py
+
+# Local eval results collected from K8s pods
+local-results/
+
+# BM25 index and corpus data (large, built on first run)
+tenants/hotpotqa/data/
+wiki.abstracts.2017.tar.gz
+
+# Customer artifact payloads are GCS-backed, not git-tracked
+tenants/*/source_artifacts/*
+!tenants/*/source_artifacts/.gitkeep
+tenants/*/datasets/*
+!tenants/*/datasets/.gitkeep

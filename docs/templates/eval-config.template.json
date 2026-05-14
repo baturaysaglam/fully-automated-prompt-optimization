@@ -1,0 +1,39 @@
+{
+  "tenant_id": "<tenant_id>",
+  "provider": "<baseten|base10|sagemaker|openai>",
+  "max_workers": null,
+  "provider_settings": {
+    "base_url": "https://<model-endpoint>/sync/v1",
+    "model": "/model",
+    "api_url": "https://<api-gateway-endpoint>/invoke",
+    "api_key_env": "X_API_KEY",
+    "timeout_seconds": 300,
+    "max_retries": 2,
+    "retry_backoff_seconds": 5,
+    "temperature": 0.0,
+    "top_p": 0.95,
+    "max_tokens": 16000
+  },
+  "dataset": {
+    "path": "tenants/<tenant_id>/datasets/datasets/cases.jsonl"
+  },
+  "chain": {
+    "path": "tenants/<tenant_id>/chains/<chain_module>.py",
+    "fn": "build_chain",
+    "config": {
+      "prompt_paths": {
+        "<step_name>": "tenants/<tenant_id>/prompts/variants/<variant>.md"
+      }
+    }
+  },
+  "scoring_profile": {
+    "scorer": {
+      "module_path": "tenants/<tenant_id>/code/scorers/<scorer_module>.py",
+      "class_name": "Scorer"
+    },
+    "tenant_config": {
+      "example_key": "example_value"
+    }
+  },
+  "output_dir": "tenants/<tenant_id>/evals/tmp/<run-name>"
+}

@@ -1,0 +1,9 @@
+{
+  "tenant_id": "cti_rcm",
+  "local_only": true,
+  "paths": {
+    "raw_local": "tenants/cti_rcm/source_artifacts",
+    "derived_local": "tenants/cti_rcm/datasets",
+    "code_local": "tenants/cti_rcm/code"
+  }
+}

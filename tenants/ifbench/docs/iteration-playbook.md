@@ -1,0 +1,41 @@
+<!--
+Copyright 2026 Cisco Systems, Inc. and its affiliates
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
+# Iteration Playbook
+
+## Prerequisites
+- Datasets built via `code/build_cases_jsonl.py`.
+- NLTK punkt_tab downloaded (auto on first scorer use).
+- Baseline eval completed.
+
+## Iteration Loop
+1. Run baseline eval on val split.
+2. Analyze train-split failures by instruction type.
+3. Create new prompt variants targeting common failure patterns.
+4. Evaluate on val split, then test split.
+
+## Data Hygiene
+
+| Split | File | Access Level |
+|-------|------|-------------|
+| **Train** | `train.jsonl` (150 cases) | **Full access.** |
+| **Val** | `val.jsonl` (300 cases) | **Aggregate scores only.** |
+| **Test** | `test.jsonl` (294 cases) | **Aggregate scores only.** Final confirmation. |
+
+**Important**: Val and test use different instruction categories. Optimizing for val
+may not directly improve test scores.
+
+## Budget
+- **30 variant budget** per module (generate and verify).
+- **Prompt-only optimization** — only modify prompt text.
+
+## Stop Criteria
+- Instruction adherence >= 60% on the test split.
+- Or: variant budget exhausted.
+- Or: 3 consecutive iterations with no improvement.
+
+## Lessons Logging
+- Record in `docs/change-log.md`.

@@ -1,0 +1,9 @@
+{
+  "tenant_id": "hotpotqa",
+  "local_only": true,
+  "paths": {
+    "raw_local": "tenants/hotpotqa/source_artifacts",
+    "derived_local": "tenants/hotpotqa/datasets",
+    "code_local": "tenants/hotpotqa/code"
+  }
+}

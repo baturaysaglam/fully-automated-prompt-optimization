@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: colbert-server
+  labels:
+    app: colbert-server
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: colbert-server
+  template:
+    metadata:
+      labels:
+        app: colbert-server
+    spec:
+      containers:
+        - name: colbert
+          image: your-registry/colbert-wiki17:0.3
+          # NOTE: DATA_DIR and CHECKPOINT_DIR are environment-specific PVC paths.
+          # Update these if deploying to a different cluster or PVC layout.
+          env:
+            - name: DATA_DIR
+              value: /data/hotpotqa/colbert-data
+            - name: CHECKPOINT_DIR
+              value: /data/hotpotqa/cache/colbertv2.0
+          ports:
+            - containerPort: 8893
+          resources:
+            requests:
+              cpu: "4"
+              memory: "16Gi"
+            limits:
+              cpu: "8"
+              memory: "16Gi"
+          readinessProbe:
+            httpGet:
+              path: /?query=test&k=1
+              port: 8893
+            initialDelaySeconds: 120
+            periodSeconds: 15
+            failureThreshold: 20
+          livenessProbe:
+            httpGet:
+              path: /?query=test&k=1
+              port: 8893
+            initialDelaySeconds: 300
+            periodSeconds: 30
+            failureThreshold: 5
+          volumeMounts:
+            - mountPath: /shared-storage
+              name: shared-storage
+      volumes:
+        - name: shared-storage
+          persistentVolumeClaim:
+            claimName: csi-pvc-mounted
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: colbert-server
+  labels:
+    app: colbert-server
+spec:
+  type: ClusterIP
+  selector:
+    app: colbert-server
+  ports:
+    - port: 8893
+      targetPort: 8893
+      protocol: TCP
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: colbert-server-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: colbert-server

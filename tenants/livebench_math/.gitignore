@@ -1,0 +1,5 @@
+# Generated datasets (rebuilt from HuggingFace)
+datasets/datasets/
+
+# Eval outputs (local-only)
+evals/

@@ -1,0 +1,9 @@
+{
+  "tenant_id": "ifbench",
+  "local_only": true,
+  "paths": {
+    "raw_local": "tenants/ifbench/source_artifacts",
+    "derived_local": "tenants/ifbench/datasets",
+    "code_local": "tenants/ifbench/code"
+  }
+}

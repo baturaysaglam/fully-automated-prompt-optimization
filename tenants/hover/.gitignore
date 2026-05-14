@@ -1,0 +1,8 @@
+# Large BM25 data files
+data/bm25/
+
+# Generated datasets
+datasets/datasets/
+
+# Eval outputs
+evals/

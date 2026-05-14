@@ -1,0 +1,5 @@
+# Generated datasets (rebuilt from source_artifacts)
+datasets/datasets/
+
+# Eval outputs (local-only)
+evals/

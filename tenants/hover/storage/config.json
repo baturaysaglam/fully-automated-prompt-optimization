@@ -1,0 +1,9 @@
+{
+  "tenant_id": "hover",
+  "local_only": true,
+  "paths": {
+    "raw_local": "tenants/hover/source_artifacts",
+    "derived_local": "tenants/hover/datasets",
+    "code_local": "tenants/hover/code"
+  }
+}

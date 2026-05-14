@@ -1,0 +1,12 @@
+# Large data files
+data/
+
+# Generated datasets (rebuilt from source_artifacts)
+datasets/datasets/
+
+# Eval outputs (local-only)
+evals/
+
+# Source artifacts (protected, tracked separately)
+source_artifacts/*
+!source_artifacts/.gitkeep
