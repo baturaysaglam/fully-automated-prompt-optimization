@@ -25,7 +25,7 @@ OUTPUT_DIR = Path("tenants/ifbench/datasets/datasets")
 
 
 def _convert_case(row: dict, idx: int, source: str) -> dict:
-    """Convert a raw IFBench row to FEPO eval case format."""
+    """Convert a raw IFBench row to FAPO eval case format."""
     return {
         "case_id": f"ifbench_{source}_{idx:04d}",
         "task_type": "instruction_following",

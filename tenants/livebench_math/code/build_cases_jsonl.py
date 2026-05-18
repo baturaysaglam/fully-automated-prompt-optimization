@@ -36,7 +36,7 @@ OUTPUT_DIR = Path("tenants/livebench_math/datasets/datasets")
 
 
 def _convert_case(row: dict, idx: int) -> dict:
-    """Convert a HuggingFace LiveBench Math row to FEPO eval case format."""
+    """Convert a HuggingFace LiveBench Math row to FAPO eval case format."""
     question_text = row["turns"][0]
     question_id = row.get("question_id", f"livebench_math_{idx:04d}")
 

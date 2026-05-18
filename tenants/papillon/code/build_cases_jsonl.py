@@ -24,7 +24,7 @@ OUTPUT_DIR = Path("tenants/papillon/datasets/datasets")
 
 
 def _convert_case(row: dict, idx: int) -> dict:
-    """Convert a HuggingFace PUPA row to FEPO eval case format."""
+    """Convert a HuggingFace PUPA row to FAPO eval case format."""
     return {
         "case_id": f"papillon_{idx:04d}",
         "task_type": "privacy_preserving",

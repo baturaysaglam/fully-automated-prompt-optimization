@@ -27,7 +27,7 @@ OUTPUT_DIR = Path("tenants/hover/datasets/datasets")
 
 
 def _convert_case(row: dict, idx: int) -> dict:
-    """Convert a HuggingFace HoVer row to FEPO eval case format."""
+    """Convert a HuggingFace HoVer row to FAPO eval case format."""
     return {
         "case_id": f"hover_{row.get('uid', idx)}",
         "task_type": "claim_verification",
