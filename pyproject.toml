@@ -11,6 +11,7 @@ authors = [{name = "Paul Kassianik"}]
 requires-python = ">=3.10"
 dependencies = [
   "openai>=1.0",
+  "litellm>=1.0",
   "pytest>=7.0",
   "datasets>=2.0",
   "langgraph>=0.2",

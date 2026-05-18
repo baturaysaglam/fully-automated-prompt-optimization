@@ -23,6 +23,12 @@ def test_provider_factory_routes_openai():
     assert isinstance(build_provider_client("openai", {}), OpenAIClient)
 
 
+def test_provider_factory_routes_litellm():
+    from src.hephaestus.providers.litellm import LiteLLMClient
+
+    assert isinstance(build_provider_client("litellm", {}), LiteLLMClient)
+
+
 def test_provider_factory_rejects_unknown_provider():
     with pytest.raises(ValueError, match="Unsupported provider"):
         build_provider_client("unknown", {})

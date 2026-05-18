@@ -8,6 +8,7 @@ from typing import Dict
 
 from .base import ProviderClient
 from .baseten import build_baseten_client
+from .litellm import build_litellm_client
 from .openai import build_openai_client
 from .sagemaker import build_sagemaker_client
 
@@ -20,4 +21,6 @@ def build_provider_client(provider_name: str, settings: Dict[str, object]) -> Pr
         return build_sagemaker_client(settings)
     if provider == "openai":
         return build_openai_client(settings)
+    if provider == "litellm":
+        return build_litellm_client(settings)
     raise ValueError(f"Unsupported provider '{provider_name}'")

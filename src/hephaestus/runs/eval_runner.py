@@ -27,7 +27,7 @@ from src.hephaestus.types import ChainConfig, EvalCase, EvalCaseResult, EvalConf
 
 logger = logging.getLogger(__name__)
 
-ALLOWED_PROVIDERS = {"baseten", "base10", "sagemaker", "openai"}
+ALLOWED_PROVIDERS = {"baseten", "base10", "sagemaker", "openai", "litellm"}
 
 
 def load_eval_config(path: Path) -> EvalConfig:
