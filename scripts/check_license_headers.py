@@ -21,12 +21,19 @@ SKIP_DIRS = {
     "node_modules",
 }
 
+# Third-party vendored code that cannot carry Cisco headers
+SKIP_PATHS = {
+    Path("tenants/ifbench/code/scoring_utils"),
+}
+
 COPYRIGHT_LINE = "Copyright 2026 Cisco Systems, Inc. and its affiliates"
 SPDX_LINE = "SPDX-License-Identifier: Apache-2.0"
 
 
 def _should_skip(path: Path) -> bool:
-    return any(part in SKIP_DIRS for part in path.parts)
+    if any(part in SKIP_DIRS for part in path.parts):
+        return True
+    return any(path.is_relative_to(sp) for sp in SKIP_PATHS)
 
 
 def _has_header(path: Path) -> bool:
