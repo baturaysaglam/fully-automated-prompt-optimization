@@ -28,6 +28,16 @@ SPDX-License-Identifier: Apache-2.0
 ## Lessons Logging
 - Record iteration outcomes in `docs/change-log.md`.
 
+## Fixed Experimental Parameters
+
+Immutable for the duration of this study (GEPA comparison fairness):
+- `temperature`: 1.0
+- `top_p`: 0.95
+- `model`: gpt-4.1-mini
+- `max_tokens`: 16000
+
+These must not be modified by any agent or optimization process. See `docs/processes/prompt-iteration-loop.md` § Experimental Constants.
+
 ## Scope Constraint
 - Only modify prompt templates in `prompts/modules/*/variant-*.md`.
 - Do NOT change retrieval parameters, model settings, or chain architecture.

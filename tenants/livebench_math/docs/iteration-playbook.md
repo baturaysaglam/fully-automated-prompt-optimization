@@ -25,6 +25,16 @@ SPDX-License-Identifier: Apache-2.0
 | **Val** | `val.jsonl` (121 cases) | **Aggregate scores only.** Check composite score totals. |
 | **Test** | `test.jsonl` (126 cases) | **Aggregate scores only.** Run once at the end. |
 
+## Fixed Experimental Parameters
+
+Immutable for the duration of this study (GEPA comparison fairness):
+- `temperature`: 1.0
+- `top_p`: 0.95
+- `model`: gpt-4.1-mini
+- `max_tokens`: 16000
+
+These must not be modified by any agent or optimization process. See `docs/processes/prompt-iteration-loop.md` § Experimental Constants.
+
 ## Budget
 - **30 variant budget** — maximum 30 prompt variants total.
 - **Prompt-only optimization** — only modify prompt text in `prompts/variants/`.

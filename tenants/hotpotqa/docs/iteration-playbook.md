@@ -50,18 +50,27 @@ The optimization agent must **only** modify prompt template files (`prompts/modu
 It must **not** change any of the following — these require explicit user approval:
 
 - Retrieval parameters (`retrieval_k`, `bm25_data_dir`)
-- Model settings (`temperature`, `top_p`, `model`, `max_tokens`)
+- Model settings — immutable experimental constants (see § Fixed Experimental Parameters above)
 - Chain architecture (`chains/multi_hop.py`, node wiring, retry/verification steps)
 - Scorer logic or evaluation config
 
 For reference, non-prompt approaches that *could* improve scores (but are out of scope for automated optimization):
-- Temperature reduction (could reduce variance by 2-3pp)
 - Retrieval improvements (BM25 k increase, passage re-ranking, query expansion)
 - Chain architecture changes (retry/verification steps, self-consistency decoding)
 - Dataset augmentation (synthetic examples for persistent failure patterns)
 
-### Temperature variance reminder:
-With temp=0.3, single-run metrics fluctuate ~1pp. The val split (300 cases) is more reliable than train (150 cases). Only accept changes showing 2+pp consistent improvement on BOTH splits.
+## Fixed Experimental Parameters
+
+Immutable for the duration of this study (GEPA comparison fairness):
+- `temperature`: 1.0
+- `top_p`: 0.95
+- `model`: gpt-4.1-mini
+- `max_tokens`: 16000
+
+These must not be modified by any agent or optimization process. See `docs/processes/prompt-iteration-loop.md` § Experimental Constants.
+
+### Variance reminder:
+With temperature=1.0, single-run metrics fluctuate ~2-3pp. The val split (300 cases) is more reliable than train (150 cases). Only accept changes showing 3+pp consistent improvement on BOTH splits.
 
 ## Stop Criteria
 - EM >= 72.5% on the 300-case fullwiki validation split.
@@ -75,7 +84,7 @@ With temp=0.3, single-run metrics fluctuate ~1pp. The val split (300 cases) is m
 The optimization agent reads this section to determine allowed optimization levels.
 
 - **Structural changes**: NOT in-scope. Chain architecture (`chains/multi_hop.py`, node wiring, retry/verification steps) is fixed. Do not create chain variants.
-- **Parameter changes**: NOT in-scope. Retrieval parameters (`retrieval_k`, `bm25_data_dir`), model settings (`temperature`, `top_p`, `model`, `max_tokens`) are fixed.
+- **Parameter changes**: NOT in-scope. Retrieval parameters (`retrieval_k`, `bm25_data_dir`) are fixed. Model settings are immutable experimental constants (see § Fixed Experimental Parameters above).
 - **Prompt changes**: In-scope. Only modify prompt template files (`prompts/modules/*/variant-*.md`).
 
 ## Lessons Logging

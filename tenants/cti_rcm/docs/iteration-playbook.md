@@ -16,8 +16,18 @@ SPDX-License-Identifier: Apache-2.0
 2. Key failure patterns to watch: `answer_format: "invalid"` (model not outputting parseable CWE ID), wrong CWE family (e.g., CWE-79 vs CWE-80).
 3. Re-run evals and iterate until tenant success criteria are met.
 
+## Fixed Experimental Parameters
+
+Immutable for the duration of this study (GEPA comparison fairness):
+- `temperature`: 1.0
+- `top_p`: 0.95
+- `model`: gpt-4.1-mini
+- `max_tokens`: 16000
+
+These must not be modified by any agent or optimization process. See `docs/processes/prompt-iteration-loop.md` § Experimental Constants.
+
 ## Optimization Scope
-- **Prompt-only optimization** — no chain or parameter changes. Temperature and top_p are fixed per model (from paper).
+- **Prompt-only optimization** — no chain or parameter changes.
 - **Budget**: 25 prompt variants maximum.
 
 ## Stop Criteria

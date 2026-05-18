@@ -169,6 +169,18 @@ If no `### Scope Constraint` section exists in the playbook, auto-pass this chec
 
 Severity: **block** if any out-of-scope file was created or modified.
 
+#### 13. Parameter Immutability
+
+If the orchestrator created or modified an eval config for this variant, compare its `provider_settings` against the tenant's baseline config (the config with `variant-001` in all prompt paths). Check that the following fields are identical:
+- `temperature`
+- `top_p`
+- `model`
+- `max_tokens`
+
+These are fixed experimental constants (see `docs/processes/prompt-iteration-loop.md` § Experimental Constants) and must never differ between variant configs and the baseline.
+
+Severity: **block** if any immutable parameter differs from baseline.
+
 ## Output Contract
 
 Return the following to the orchestrator:
