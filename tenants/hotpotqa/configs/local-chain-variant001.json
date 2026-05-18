@@ -6,7 +6,7 @@
     "timeout_seconds": 300,
     "max_retries": 2,
     "retry_backoff_seconds": 5,
-    "temperature": 0.3,
+    "temperature": 0.0,
     "top_p": 0.95,
     "max_tokens": 16000
   },

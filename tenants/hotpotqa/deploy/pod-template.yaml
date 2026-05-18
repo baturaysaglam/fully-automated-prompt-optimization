@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ${POD_NAME}
+  namespace: ${NAMESPACE}
+  labels:
+    app: hephaestus
+    component: evaluation
+    hephaestus/tenant: hotpotqa
+    hephaestus/run-name: ${POD_NAME}
+spec:
+  restartPolicy: Never
+  tolerations:
+  - key: "kubernetes.io/arch"
+    operator: "Equal"
+    value: "amd64"
+    effect: "NoSchedule"
+  containers:
+  - name: eval-runner
+    image: python:3.11-slim
+    command: ["bash", "-c", "trap 'exit 0' TERM; while [ ! -f /tmp/.heph-pid ]; do sleep 2; done; tail --pid=$(cat /tmp/.heph-pid) -f /dev/null; exit $(cat /tmp/.heph-exit-code 2>/dev/null || echo 1)"]
+    resources:
+      requests:
+        cpu: "1"
+        memory: "6Gi"
+        ephemeral-storage: "5Gi"
+      limits:
+        cpu: "2"
+        memory: "10Gi"
+        ephemeral-storage: "10Gi"
+    volumeMounts:
+    - name: workspace
+      mountPath: ${MOUNT_PATH}
+  volumes:
+  - name: workspace
+    persistentVolumeClaim:
+      claimName: csi-pvc-mounted

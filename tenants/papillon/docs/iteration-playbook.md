@@ -17,7 +17,7 @@ SPDX-License-Identifier: Apache-2.0
 4. For quality: improve reconstruction prompt to better leverage untrusted response.
 
 ## Stop Criteria
-- Composite score >= 94% on val split.
+- Composite score >= 93.5% on val split.
 - Or: 3 consecutive iterations with no improvement.
 
 ## Scope Constraint

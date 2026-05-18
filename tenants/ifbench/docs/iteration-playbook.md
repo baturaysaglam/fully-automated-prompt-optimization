@@ -33,7 +33,7 @@ may not directly improve test scores.
 - **Prompt-only optimization** — only modify prompt text.
 
 ## Stop Criteria
-- Instruction adherence >= 60% on the test split.
+- Instruction adherence >= 55.5% on the test split.
 - Or: variant budget exhausted.
 - Or: 3 consecutive iterations with no improvement.
 

@@ -19,9 +19,9 @@ dependencies = [
 
 [project.optional-dependencies]
 local-models = ["llama-cpp-python", "huggingface_hub"]
-hotpotqa = ["bm25s>=0.2", "PyStemmer>=2.0", "ujson>=5.0", "diskcache>=5.0"]
+hotpotqa = ["bm25s==0.2.14", "PyStemmer>=2.0", "ujson>=5.0", "diskcache>=5.0"]
 hover = ["bm25s>=0.2", "PyStemmer>=2.0", "ujson>=5.0", "diskcache>=5.0"]
-ifbench = ["nltk>=3.8", "spacy>=3.0", "emoji>=2.0", "syllapy>=0.7"]
+ifbench = ["nltk>=3.8", "spacy>=3.0", "emoji>=2.0", "syllapy>=0.7", "immutabledict>=4.0", "langdetect>=1.0", "packaging>=21.0"]
 livebench_math = ["sympy>=1.12", "lark>=1.1", "Levenshtein>=0.20"]
 papillon = []
 cti_rcm = ["cisco-foundation-ai-test-harness @ git+https://github.com/cisco-foundation-ai/faith.git@0.2.0"]

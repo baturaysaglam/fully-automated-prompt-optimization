@@ -27,3 +27,12 @@ SPDX-License-Identifier: Apache-2.0
 - Fix: Changed `_replace_placeholders()` to single-pass, only replacing valid identifier
   patterns (alphanumeric + underscore + hyphen). Non-identifier `${...}` patterns are preserved.
 - Impact: AMPS_Hard went from 36.5% → 67.3%. Overall val score: 71.96%.
+
+## 2026-05-14 — Baseline Confirmed (temp=0.0)
+- Run: `hephaestus-livebench-math-tf1aee` (K8s, variant-001, val split)
+- Config: gpt-4.1-mini, temperature=0.0, top_p=0.95, max_tokens=16000
+- Result: **70.74%** composite score (121 cases, 80 correct, 24 zeros, 17 olympiad partials)
+- Breakdown: math_comp 89.1%, AMPS_Hard 63.5%, olympiad 50.4%
+- Status: **TARGET MET** (64% threshold exceeded)
+- Note: variant-002 (format guidance prompt) also ran, achieving ~68.2% at 95/121 cases
+  before pod auto-deleted. The baseline already exceeds the target without modification.

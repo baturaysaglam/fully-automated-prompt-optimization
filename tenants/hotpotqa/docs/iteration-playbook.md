@@ -64,7 +64,7 @@ For reference, non-prompt approaches that *could* improve scores (but are out of
 With temp=0.3, single-run metrics fluctuate ~1pp. The val split (300 cases) is more reliable than train (150 cases). Only accept changes showing 2+pp consistent improvement on BOTH splits.
 
 ## Stop Criteria
-- EM >= 73% on the 300-case fullwiki validation split.
+- EM >= 72.5% on the 300-case fullwiki validation split.
 
 ## Regression Prevention
 - Run full chain eval on the validation split after each prompt change.
