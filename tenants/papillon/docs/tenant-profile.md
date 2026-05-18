@@ -22,6 +22,11 @@ Setup follows GEPA (arXiv:2507.19457).
 - Primary challenge: balancing privacy (no PII leakage) with response quality.
 - Common failure modes: incomplete PII redaction, quality loss during reconstruction.
 
+## Known Safe Patterns
+- PII in the dataset is synthetic or anonymized from the PUPA benchmark.
+- Untrusted LLM only receives redacted queries (no real PII exposure).
+- Judge evaluations compare response quality without accessing raw PII.
+
 ## Tenant Terminology
 - **PII**: Personally Identifiable Information.
 - **PUPA**: Privacy-Utility Preserving Approach.

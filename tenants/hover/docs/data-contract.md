@@ -31,6 +31,10 @@ SPDX-License-Identifier: Apache-2.0
 }
 ```
 
+## Label Taxonomy
+- Labels: `SUPPORTED` (claim verified by evidence) and `NOT_SUPPORTED`.
+- Hop count: all cases are 3-hop (require 3 supporting documents).
+
 ## Check Expectations
 
 - Scorer: `code/scorers/hover_scorer.py::Scorer`

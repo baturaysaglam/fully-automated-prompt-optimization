@@ -11,6 +11,13 @@ SPDX-License-Identifier: Apache-2.0
 - The chain's final output_text is the combined retrieval results.
 - Scoring evaluates retrieval coverage, not LLM output format.
 
+## Decision Policy
+- The chain follows a fixed 3-hop retrieval pattern: no branching or conditional logic.
+- Each hop generates a query, retrieves passages, and summarizes them for the next hop.
+
+## Defang and Safety Rules
+- No special defanging required — inputs are factual claims and outputs are Wikipedia passages.
+
 ## Variant Strategy
 - Variants in `prompts/modules/{summarize1,summarize2,query_hop2,query_hop3}/`.
 - `variant-001.md`: Baseline prompts.

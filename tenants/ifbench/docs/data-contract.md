@@ -30,6 +30,10 @@ SPDX-License-Identifier: Apache-2.0
 }
 ```
 
+## Label Taxonomy
+- Instruction categories: formatting constraints (word count, case, punctuation), structural constraints (sections, bullet points), content constraints (keywords, language).
+- Each case has 1-5 instructions from a registry of ~25 instruction types.
+
 ## Check Expectations
 
 - Scorer: `code/scorers/ifbench_scorer.py::Scorer`

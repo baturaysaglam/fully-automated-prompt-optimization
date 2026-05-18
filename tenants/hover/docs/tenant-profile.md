@@ -21,6 +21,11 @@ supporting documents across 3 reasoning hops. Setup follows GEPA (arXiv:2507.194
 - Common failure modes: query generation that misses entities, retrieval recall
   on disambiguation-heavy titles.
 
+## Known Safe Patterns
+- Claims are drawn from public Wikipedia-based HoVer dataset.
+- Gold supporting titles reference Wikipedia articles (public domain).
+- BM25 retrieval returns Wikipedia abstract passages.
+
 ## Tenant Terminology
 - **HoVer**: Hover (Many-Hop Fact Verification).
 - **BM25**: Best Match 25 — probabilistic ranking function for retrieval.

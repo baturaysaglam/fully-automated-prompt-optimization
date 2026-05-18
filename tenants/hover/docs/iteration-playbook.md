@@ -21,6 +21,13 @@ SPDX-License-Identifier: Apache-2.0
 - Partial retrieval recall >= 60% on val split.
 - Or: 3 consecutive iterations with no improvement.
 
+## Regression Prevention
+- Run full chain eval on the validation split after each prompt change.
+- Compare recall against previous best before accepting a new variant.
+
+## Lessons Logging
+- Record iteration outcomes in `docs/change-log.md`.
+
 ## Scope Constraint
 - Only modify prompt templates in `prompts/modules/*/variant-*.md`.
 - Do NOT change retrieval parameters, model settings, or chain architecture.

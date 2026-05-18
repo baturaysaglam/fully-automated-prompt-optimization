@@ -34,6 +34,11 @@ SPDX-License-Identifier: Apache-2.0
 }
 ```
 
+## Label Taxonomy
+- PII types: names, addresses, phone numbers, emails, SSNs, dates of birth.
+- Categories: personal_finance, healthcare, legal, employment.
+- Quality labels: binary pass/fail from LLM judge comparison.
+
 ## Check Expectations
 
 - Scorer: `code/scorers/papillon_scorer.py::Scorer`

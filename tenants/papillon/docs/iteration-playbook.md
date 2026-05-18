@@ -20,6 +20,13 @@ SPDX-License-Identifier: Apache-2.0
 - Composite score >= 93.5% on val split.
 - Or: 3 consecutive iterations with no improvement.
 
+## Regression Prevention
+- Run full chain eval on the validation split after each prompt change.
+- Compare composite score against previous best before accepting a new variant.
+
+## Lessons Logging
+- Record iteration outcomes in `docs/change-log.md`.
+
 ## Scope Constraint
 - Only modify prompt templates.
 - Do NOT change untrusted model, judge model, or scoring logic.
