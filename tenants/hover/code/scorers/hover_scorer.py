@@ -57,20 +57,26 @@ class Scorer(BaseScorer):
         retrieved_titles = _extract_titles_from_passages(output_text)
 
         found = gold_titles & retrieved_titles
-        all_found = gold_titles <= retrieved_titles
+        missing = gold_titles - retrieved_titles
+        all_found = len(missing) == 0
 
         composite = 100.0 if all_found else 0.0
         num_gold = len(gold_titles)
         num_found = len(found)
         partial_recall = (num_found / num_gold * 100.0) if num_gold > 0 else 0.0
 
+        raw_titles = case.expected["supporting_titles"]
+        gold_titles_list = sorted(raw_titles)
+        found_titles_list = sorted(t for t in raw_titles if normalize_title(t) in found)
+        missing_titles_list = sorted(t for t in raw_titles if normalize_title(t) in missing)
+
         return {
             "composite_score": composite,
             "score_breakdown": {
                 "recall": composite,
                 "partial_recall": partial_recall,
-                "num_gold": float(num_gold),
-                "num_found": float(num_found),
-                "num_missing": float(num_gold - num_found),
+                "gold_titles": gold_titles_list,
+                "found_titles": found_titles_list,
+                "missing_titles": missing_titles_list,
             },
         }

@@ -8,8 +8,10 @@ from __future__ import annotations
 
 import pytest
 
-from src.hephaestus.types import EvalCase
-from tenants.ifbench.code.scorers.ifbench_scorer import Scorer
+pytest.importorskip("nltk", reason="ifbench scorer tests require nltk")
+
+from src.hephaestus.types import EvalCase  # noqa: E402
+from tenants.ifbench.code.scorers.ifbench_scorer import Scorer  # noqa: E402
 
 
 def _make_case(
