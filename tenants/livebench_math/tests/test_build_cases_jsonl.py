@@ -8,8 +8,6 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-import pytest
-
 from tenants.livebench_math.code.build_cases_jsonl import _convert_case, build_all
 
 

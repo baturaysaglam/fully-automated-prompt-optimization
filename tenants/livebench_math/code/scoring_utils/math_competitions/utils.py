@@ -37,7 +37,8 @@ def mathcontest_process_results_with_feedback(
             )
         else:
             feedback_details.append(
-                f"Answer in <solution> tags ('{solution_match}') did not match ground truth ('{ground_truth}')."
+                f"Answer in <solution> tags ('{solution_match}') did not match ground truth"
+                f" ('{ground_truth}')."
             )
     else:
         feedback_details.append("No <solution> tags found.")
@@ -46,7 +47,7 @@ def mathcontest_process_results_with_feedback(
     if score == 0:
         if ground_truth * 4 in llm_answer:
             score = 1
-            feedback_details.append(f"Correct answer detected as repeated letter pattern.")
+            feedback_details.append("Correct answer detected as repeated letter pattern.")
         else:
             feedback_details.append("No repeated letter pattern detected.")
 
@@ -66,7 +67,7 @@ def mathcontest_process_results_with_feedback(
                 parsed_answer = last_boxed_res
                 if parsed_answer == ground_truth.lower():
                     score = 1
-                    feedback_details.append(f"Boxed answer matches ground truth.")
+                    feedback_details.append("Boxed answer matches ground truth.")
                 else:
                     feedback_details.append(
                         f"Boxed answer '{last_boxed_res.upper()}' does not match '{ground_truth}'."
@@ -84,7 +85,7 @@ def mathcontest_process_results_with_feedback(
             score = 1
             feedback_details.append(f"Found answer value '{value}' at end of output.")
         else:
-            feedback_details.append(f"Did not find answer value at end of response.")
+            feedback_details.append("Did not find answer value at end of response.")
 
     # 5. Last line matching
     if score == 0:
@@ -92,16 +93,16 @@ def mathcontest_process_results_with_feedback(
         last_line_stripped = last_line.strip().replace("*", "").lower()
         if last_line_stripped == ground_truth.lower():
             score = 1
-            feedback_details.append(f"Last line matches ground truth.")
+            feedback_details.append("Last line matches ground truth.")
         elif "(" in last_line and ")" in last_line:
             val = last_line.split("(")[1].split(")")[0]
             if val.lower() == ground_truth.lower():
                 score = 1
-                feedback_details.append(f"Last line parenthetical matches ground truth.")
+                feedback_details.append("Last line parenthetical matches ground truth.")
             else:
                 feedback_details.append(f"Last line parenthetical '{val}' does not match.")
         else:
-            feedback_details.append(f"Last line does not match ground truth.")
+            feedback_details.append("Last line does not match ground truth.")
 
     if score == 1:
         feedback_text = "Correct answer detected.\n" + "\n".join(feedback_details)

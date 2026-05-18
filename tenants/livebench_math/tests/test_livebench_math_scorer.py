@@ -31,7 +31,10 @@ def _amc_question_d(ground_truth: str = "C") -> dict:
         "task": "math_competitions",
         "subtask": "amc_2024",
         "category": "math",
-        "turns": ["What is 2+2? \\textbf{(A)}~3\\qquad\\textbf{(B)}~5\\qquad\\textbf{(C)}~4\\qquad\\textbf{(D)}~6\\qquad\\textbf{(E)}~7"],
+        "turns": [
+            "What is 2+2? \\textbf{(A)}~3\\qquad\\textbf{(B)}~5"
+            "\\qquad\\textbf{(C)}~4\\qquad\\textbf{(D)}~6\\qquad\\textbf{(E)}~7"
+        ],
         "ground_truth": ground_truth,
     }
 

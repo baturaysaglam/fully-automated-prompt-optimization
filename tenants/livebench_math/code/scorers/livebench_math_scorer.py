@@ -11,7 +11,6 @@ from typing import Any, Dict
 
 from src.hephaestus.scoring.scorer import Scorer as BaseScorer
 from src.hephaestus.types import EvalCase
-
 from tenants.livebench_math.code.scoring_utils.metric import calculate_livebench_score
 
 

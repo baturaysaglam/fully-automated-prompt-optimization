@@ -12,12 +12,12 @@ from __future__ import annotations
 import re
 from typing import Tuple
 
+from .AMPS_Hard.utils import amps_hard_process_results
 from .math_competitions.utils import (
     aime_process_results,
     mathcontest_process_results_with_feedback,
 )
 from .olympiad.utils import proof_rearrangement_process_results
-from .AMPS_Hard.utils import amps_hard_process_results
 
 
 def calculate_livebench_score(

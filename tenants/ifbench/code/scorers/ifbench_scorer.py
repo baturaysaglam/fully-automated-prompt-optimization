@@ -24,7 +24,9 @@ def _ensure_nltk():
         nltk.download("punkt_tab", quiet=True)
 
 
-def _check_instructions(response: str, instruction_id_list: list, kwargs_list: list, prompt: str) -> tuple[float, str]:
+def _check_instructions(
+    response: str, instruction_id_list: list, kwargs_list: list, prompt: str
+) -> tuple[float, str]:
     """Check how many instructions the response follows.
 
     Uses 8 response variants (original, remove first/last line, both,

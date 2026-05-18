@@ -10,8 +10,6 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
 from tenants.ifbench.code.build_cases_jsonl import _convert_case, build_all
 
 

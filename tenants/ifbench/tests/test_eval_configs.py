@@ -8,8 +8,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from src.hephaestus.runs.eval_runner import load_eval_config
 
 CONFIGS_DIR = Path(__file__).resolve().parent.parent / "configs"
