@@ -35,7 +35,8 @@ deploy/scripts/run_eval.sh --config tenants/hotpotqa/configs/remote-chain-varian
 Each run creates a dedicated pod named `hephaestus-hotpotqa-<hash>` with isolated workspace and results.
 
 ## Success Criteria
-- Baseline target: ~38% EM (+/-5%) on 300-case fullwiki val split (matching GEPA Table 2).
+- Optimization target: >= 72.5% EM on 300-case fullwiki val split.
+- Baseline sanity check: ~38% EM (+/-5%) before optimization (matching GEPA Table 2).
 
 ## Failure Triage
 - Check `summary.md` for aggregate EM and F1 scores.

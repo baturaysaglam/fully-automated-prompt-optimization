@@ -61,10 +61,10 @@ For reference, non-prompt approaches that *could* improve scores (but are out of
 - Dataset augmentation (synthetic examples for persistent failure patterns)
 
 ### Temperature variance reminder:
-With temp=1.0, single-run metrics fluctuate ~3pp. The val split (300 cases) is more reliable than train (150 cases). Only accept changes showing 3+pp consistent improvement on BOTH splits.
+With temp=0.3, single-run metrics fluctuate ~1pp. The val split (300 cases) is more reliable than train (150 cases). Only accept changes showing 2+pp consistent improvement on BOTH splits.
 
 ## Stop Criteria
-- EM >= 38% on the 300-case fullwiki validation split after optimizing over training data (matching GEPA baseline).
+- EM >= 72.5% on the 300-case fullwiki validation split.
 
 ## Regression Prevention
 - Run full chain eval on the validation split after each prompt change.

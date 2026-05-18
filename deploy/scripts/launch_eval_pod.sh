@@ -110,9 +110,11 @@ spec:
       requests:
         cpu: "${CPU_REQ}"
         memory: "${MEM_REQ}"
+        ephemeral-storage: "5Gi"
       limits:
         cpu: "${CPU_LIM}"
         memory: "${MEM_LIM}"
+        ephemeral-storage: "10Gi"
     volumeMounts:
     - name: workspace
       mountPath: ${MOUNT_PATH}

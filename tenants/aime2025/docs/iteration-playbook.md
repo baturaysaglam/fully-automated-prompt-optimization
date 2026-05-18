@@ -22,7 +22,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Prompt-only optimization** — do not modify chain structure, scorer, or parameters. Only iterate on prompt text in `prompts/variants/`.
 
 ## Stop Criteria
-- Accuracy on test split meets or exceeds GEPA scores (49.06 for GPT-4.1-mini).
+- Accuracy >= 60% on val split.
 - Or: variant budget exhausted (30 variants).
 - Or: 3 consecutive iterations with no improvement.
 

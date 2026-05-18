@@ -1,9 +1,6 @@
 {
   "tenant_id": "aime2025",
-  "gcs": {
-    "bucket": "your-gcs-bucket-name",
-    "prefix": "tenants/aime2025"
-  },
+  "local_only": true,
   "paths": {
     "raw_local": "tenants/aime2025/source_artifacts",
     "derived_local": "tenants/aime2025/datasets",

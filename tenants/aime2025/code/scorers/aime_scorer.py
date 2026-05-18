@@ -89,7 +89,7 @@ class Scorer(BaseScorer):
             "score_breakdown": {
                 "exact_match": 0.0,
                 "llm_equiv": 0.0,
-                "predicted_answer": predicted or "",
+                "predicted_answer": float(predicted) if predicted else 0.0,
             },
         }
 

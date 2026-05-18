@@ -176,6 +176,10 @@ sync_code() {
     done
     [ -f "$PROJECT_ROOT/pyproject.toml" ] && tar_args+=("pyproject.toml")
     tar_args+=("tenants/$tenant_id")
+    # Include cross-tenant dependencies (e.g., hover imports hotpotqa retrieval)
+    if [ "$tenant_id" == "hover" ] && [ -d "$PROJECT_ROOT/tenants/hotpotqa/code" ]; then
+        tar_args+=("tenants/hotpotqa/__init__.py" "tenants/hotpotqa/code")
+    fi
     [ -f "$PROJECT_ROOT/.env" ] && tar_args+=(".env")
 
     if [ ${#tar_args[@]} -eq 0 ]; then
@@ -184,7 +188,14 @@ sync_code() {
     fi
 
     log_info "  Syncing: ${tar_args[*]}"
-    tar -chf - -C "$PROJECT_ROOT" "${tar_args[@]}" \
+    tar -chf - -C "$PROJECT_ROOT" \
+        --exclude='__pycache__' \
+        --exclude='*.pyc' \
+        --exclude='evals/local' \
+        --exclude='data/bm25/bm25s_retriever' \
+        --exclude='data/bm25/wiki.abstracts*' \
+        --exclude='data/bm25/retriever_cache' \
+        "${tar_args[@]}" \
         | kctl exec -i $EXEC_CONTAINER "$POD_NAME" -- bash -c "mkdir -p '$remote_workspace' && tar -xf - -C '$remote_workspace'"
 
     if [ ! -f "$PROJECT_ROOT/.env" ]; then

@@ -21,6 +21,7 @@ tenants/*/reports/**
 reports/evals/tmp/
 
 # Environment (contains API keys — never commit)
+.env
 .envrc
 
 # Internal-only docs and scrubbers (contain references to internal infrastructure)

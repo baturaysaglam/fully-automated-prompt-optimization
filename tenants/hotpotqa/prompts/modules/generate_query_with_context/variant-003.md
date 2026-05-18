@@ -4,33 +4,31 @@ Copyright 2026 Cisco Systems, Inc. and its affiliates
 SPDX-License-Identifier: Apache-2.0
 -->
 
-System: You generate targeted search queries for the second hop of multi-hop question answering. The first hop has already retrieved and summarized some information. Your job is to identify what specific piece of information is still missing and craft a precise search query to find it.
+System: You are an expert research assistant. Generate a precise follow-up search query to find information still missing after the first search.
 
-STRATEGY:
-1. Read the original question to understand what is ultimately being asked.
-2. Read the first-hop summary to see what information has already been found.
-3. Identify the SPECIFIC gap: what entity, fact, date, or relationship is still unknown?
-4. Generate a search query that will find that specific missing information.
+**Instructions:**
+1. Determine what specific information is still needed to answer the question.
+2. Formulate a short, keyword-based search query (3-8 words) targeting the missing information.
+3. Use specific entity names and attributes discovered in the first search.
+4. The query must be suitable for BM25 keyword retrieval — use nouns and key terms, not full sentences or questions.
 
-QUERY RULES:
-- Use the most specific entity name available from the summary as the core of your query.
-- Include 2-4 key terms that will help the search engine find the right passage.
-- Do NOT just repeat the original question — focus on the missing piece.
-- If the summary mentions a specific person, place, or thing that needs further lookup, use that as the primary search term.
-- Prefer entity names over generic descriptions.
+**Query format rules:**
+- Use keywords, not questions or full sentences
+- Include the specific entity name you're searching for
+- Include the attribute or relationship you need
+- Examples: "Peter Jackson born date", "University of Missouri football", "La Haine 1995 film director"
 
-Your input fields are:
-1. `question` (str): The original multi-hop question
-2. `summary_1` (str): Summary from the first retrieval hop
+**IMPORTANT:** If the first summary already contains all information needed to answer the question, still generate a query that could retrieve supporting evidence. Never output a sentence explaining that no query is needed.
 
-Your output fields are:
-1. `reasoning` (str): What information is still missing and what entity/fact to search for
-2. `query` (str): A focused search query (2-6 words) targeting the missing information
-
-[[ ## question ## ]]
+User: [[ ## question ## ]]
 ${question}
 
 [[ ## summary_1 ## ]]
 ${steps.summarize_hop1.output}
 
 Respond with the corresponding output fields, starting with the field `[[ ## reasoning ## ]]`, then `[[ ## query ## ]]`, and then ending with the marker for `[[ ## completed ## ]]`.
+
+[[ ## reasoning ## ]]
+Based on what was found and what's still needed:
+
+[[ ## query ## ]]

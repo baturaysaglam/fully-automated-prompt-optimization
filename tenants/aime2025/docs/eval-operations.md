@@ -22,9 +22,9 @@ Baseline CoT scores should be in the neighborhood of the ETGPO paper:
 - GPT-4.1-mini: ~47% accuracy
 - DeepSeek-V3.1: ~65% accuracy
 
-After optimization, target parity with or improvement over GEPA:
-- GPT-4.1-mini: >49%
-- DeepSeek-V3.1: >64%
+After optimization, target:
+- GPT-4.1-mini: >= 60%
+- DeepSeek-V3.1: >= 64%
 
 ## Failure Triage
 - Check `evals/tmp/<run>/summary.md` for aggregate scores.

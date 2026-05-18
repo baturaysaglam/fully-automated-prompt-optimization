@@ -1,9 +1,6 @@
 {
   "tenant_id": "hotpotqa",
-  "gcs": {
-    "bucket": "your-gcs-bucket-name",
-    "prefix": "tenants/hotpotqa"
-  },
+  "local_only": true,
   "paths": {
     "raw_local": "tenants/hotpotqa/source_artifacts",
     "derived_local": "tenants/hotpotqa/datasets",
