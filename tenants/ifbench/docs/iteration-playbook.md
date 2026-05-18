@@ -33,7 +33,7 @@ may not directly improve test scores.
 Immutable for the duration of this study (GEPA comparison fairness):
 - `temperature`: 1.0
 - `top_p`: 0.95
-- `model`: gpt-4.1-mini
+- `model`: as set in the baseline config (must not change within an optimization run)
 - `max_tokens`: 16000
 
 These must not be modified by any agent or optimization process. See `docs/processes/prompt-iteration-loop.md` § Experimental Constants.

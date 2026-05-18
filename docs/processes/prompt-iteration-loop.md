@@ -58,10 +58,11 @@ Fixed for GEPA-comparison fairness (from Appendix A.4 of the GEPA paper):
 
 | Parameter | Value | Rationale |
 |-----------|-------|-----------|
-| `temperature` | 1.0 | GEPA reports all GPT-4.1-mini results at temperature=1.0 |
+| `temperature` | 1.0 | GEPA reports all results at temperature=1.0 |
 | `top_p` | 0.95 | Matches GEPA experimental setup |
-| `model` | gpt-4.1-mini | Primary task model for all tenants |
 | `max_tokens` | 16000 | Matches GEPA context budget |
+
+The **model** is set per-experiment in the baseline config and must not change within an optimization run. The optimization agent must not switch models mid-run.
 
 These are NOT tunable parameters. Tenant playbooks and the optimization agent must treat them as immutable. Altering temperature would confound prompt-quality improvements with sampling-regime changes, invalidating the comparison.
 

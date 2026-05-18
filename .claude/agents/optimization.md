@@ -113,11 +113,11 @@ When creating parameter variants (config-only changes):
 - Document the hypothesis in the config (or in iteration-memory.jsonl)
 - Only adjust parameters allowed by the scope contract
 - Common parameter knobs: `retrieval_k`
-- **Immutable parameters** (never modify): `temperature`, `top_p`, `model`, `max_tokens` — see `docs/processes/prompt-iteration-loop.md` § Experimental Constants
+- **Immutable parameters** (never modify): `temperature`, `top_p`, `model`, `max_tokens` — these must match the tenant's baseline config exactly. See `docs/processes/prompt-iteration-loop.md` § Experimental Constants
 
 ## Guardrails
 
-- **Immutable experimental parameters**: `temperature`, `top_p`, `model`, and `max_tokens` are fixed experimental constants set for GEPA-comparison fairness (see `docs/processes/prompt-iteration-loop.md`). They must never be modified, proposed, or discussed as optimization levers — regardless of what the tenant scope contract says or what failure analysis suggests. If analysis concludes that parameter changes would help, acknowledge the ceiling and move on. This rule is unconditional and non-negotiable.
+- **Immutable experimental parameters**: `temperature`, `top_p`, `model`, and `max_tokens` must remain identical to the tenant's baseline config throughout the optimization run. They must never be modified, proposed, or discussed as optimization levers — regardless of what the tenant scope contract says or what failure analysis suggests. If analysis concludes that parameter changes would help, acknowledge the ceiling and move on. This rule is unconditional and non-negotiable. See `docs/processes/prompt-iteration-loop.md` § Experimental Constants.
 - **Scope contract check**: before writing any variant, verify it only touches levels allowed by the scope contract produced in step 1. If it would touch a forbidden level, discard and try a different approach.
 - Follow all tenant data safety rules from `CLAUDE.md`
 - Chain variant files must live in `tenants/<id>/chains/variants/` — never modify the baseline chain
