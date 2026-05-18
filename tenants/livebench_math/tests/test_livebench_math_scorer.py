@@ -8,8 +8,10 @@ from __future__ import annotations
 
 import pytest
 
-from src.hephaestus.types import EvalCase
-from tenants.livebench_math.code.scorers.livebench_math_scorer import Scorer
+pytest.importorskip("sympy", reason="livebench_math tests require sympy")
+
+from src.hephaestus.types import EvalCase  # noqa: E402
+from tenants.livebench_math.code.scorers.livebench_math_scorer import Scorer  # noqa: E402
 
 
 def _make_case(
