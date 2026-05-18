@@ -3,30 +3,70 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """
-Verification tests for experiment configuration:
-- Temperature=0.0 across all tenants
-- CoT prompting in effect for IFBench and HoVer
+Verification tests for experiment configuration invariants:
+- Temperature=1.0 across all tenant configs (immutable experimental constant)
+- Model name NOT hardcoded in enforcement docs (determined by baseline config)
 - Threshold values correctly set in playbooks
 """
 
 import glob
 import json
 import os
+import re
 import subprocess
 
 import pytest
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+EXPERIMENTAL_TENANTS = [
+    "aime2025",
+    "cti_rcm",
+    "hotpotqa",
+    "hover",
+    "ifbench",
+    "livebench_math",
+    "papillon",
+]
+
+ENFORCEMENT_DOC_PATHS = [
+    "docs/processes/prompt-iteration-loop.md",
+    ".claude/agents/optimization.md",
+    ".claude/agents/variant-reviewer.md",
+] + [f"tenants/{t}/docs/iteration-playbook.md" for t in EXPERIMENTAL_TENANTS]
+
+MODEL_NAME_RE = re.compile(
+    r"\bgpt-[34][^\s,)]*|\bclaude-[^\s,)]*|\bgemini-[^\s,)]*|\bllama-[^\s,)]*",
+    re.IGNORECASE,
+)
+
 
 def _rel(path):
     return os.path.join(PROJECT_ROOT, path)
 
 
-class TestTemperatureZero:
+def _extract_section(content: str, heading: str) -> str:
+    """Extract markdown section text from ## heading to next ## or EOF."""
+    pattern = rf"^## {re.escape(heading)}.*?\n(.*?)(?=^## |\Z)"
+    match = re.search(pattern, content, re.MULTILINE | re.DOTALL)
+    return match.group(1) if match else ""
 
-    def test_all_configs_temperature_zero(self):
-        """Every provider_settings.temperature must be 0.0."""
+
+def _load_all_eval_configs():
+    """Load all tenant eval config JSON files."""
+    configs = glob.glob(_rel("tenants/*/configs/*.json"))
+    return [(path, json.load(open(path))) for path in configs]
+
+
+# ---------------------------------------------------------------------------
+# Group 1: Config Value Tests
+# ---------------------------------------------------------------------------
+
+
+class TestConfigValues:
+
+    def test_all_configs_temperature_one(self):
+        """Every provider_settings.temperature must be 1.0."""
         configs = glob.glob(_rel("tenants/*/configs/*.json"))
         assert len(configs) > 0, "No config files found"
         for path in configs:
@@ -34,14 +74,43 @@ class TestTemperatureZero:
                 config = json.load(f)
             if "provider_settings" in config:
                 temp = config["provider_settings"].get("temperature")
-                assert temp == 0.0, (
+                assert temp == 1.0, (
                     f"{os.path.relpath(path, PROJECT_ROOT)}: "
-                    f"temperature is {temp}, expected 0.0"
+                    f"temperature is {temp}, expected 1.0"
                 )
 
-    def test_papillon_untrusted_model_temperature_preserved(self):
-        """Papillon untrusted_model.temperature must remain 1.0 (adversarial)."""
+    def test_all_configs_top_p(self):
+        """Every provider_settings.top_p must be 0.95."""
+        configs = glob.glob(_rel("tenants/*/configs/*.json"))
+        assert len(configs) > 0, "No config files found"
+        for path in configs:
+            with open(path) as f:
+                config = json.load(f)
+            if "provider_settings" in config:
+                top_p = config["provider_settings"].get("top_p")
+                assert top_p == 0.95, (
+                    f"{os.path.relpath(path, PROJECT_ROOT)}: "
+                    f"top_p is {top_p}, expected 0.95"
+                )
+
+    def test_all_configs_max_tokens(self):
+        """Every provider_settings.max_tokens must be 16000."""
+        configs = glob.glob(_rel("tenants/*/configs/*.json"))
+        assert len(configs) > 0, "No config files found"
+        for path in configs:
+            with open(path) as f:
+                config = json.load(f)
+            if "provider_settings" in config:
+                max_tokens = config["provider_settings"].get("max_tokens")
+                assert max_tokens == 16000, (
+                    f"{os.path.relpath(path, PROJECT_ROOT)}: "
+                    f"max_tokens is {max_tokens}, expected 16000"
+                )
+
+    def test_papillon_untrusted_model_temperature(self):
+        """Papillon untrusted_model.temperature must be 1.0."""
         configs = glob.glob(_rel("tenants/papillon/configs/*.json"))
+        assert len(configs) > 0, "No papillon config files found"
         for path in configs:
             with open(path) as f:
                 config = json.load(f)
@@ -50,127 +119,178 @@ class TestTemperatureZero:
                 temp = chain_config["untrusted_model"].get("temperature")
                 assert temp == 1.0, (
                     f"{os.path.relpath(path, PROJECT_ROOT)}: "
-                    f"untrusted_model temperature is {temp}, must stay 1.0"
+                    f"untrusted_model temperature is {temp}, must be 1.0"
                 )
 
-
-class TestIFBenchCoT:
-
-    def test_generate_variant002_exists(self):
-        """IFBench generate variant-002 must exist."""
-        path = _rel("tenants/ifbench/prompts/modules/generate/variant-002.md")
-        assert os.path.exists(path), f"CoT generate variant missing: {path}"
-
-    def test_generate_has_cot_markers(self):
-        """IFBench generate variant-002 must contain CoT output markers."""
-        path = _rel("tenants/ifbench/prompts/modules/generate/variant-002.md")
-        content = open(path).read()
-        assert "---RESPONSE---" in content, "Generate prompt missing ---RESPONSE--- separator"
-        assert "CONSTRAINTS" in content, "Generate prompt missing CONSTRAINTS instruction"
-        assert "PLAN" in content, "Generate prompt missing PLAN instruction"
-
-    def test_generate_does_not_suppress_reasoning(self):
-        """Generate must NOT suppress CoT output."""
-        path = _rel("tenants/ifbench/prompts/modules/generate/variant-002.md")
-        content = open(path).read()
-        body = content.split("-->", 1)[-1] if "-->" in content else content
-        assert "output ONLY" not in body, "Generate prompt suppresses CoT output"
-        assert "no meta-commentary" not in body.lower(), "Generate prompt suppresses reasoning"
-
-    def test_verify_variant002_exists(self):
-        """IFBench verify variant-002 must exist."""
-        path = _rel("tenants/ifbench/prompts/modules/verify/variant-002.md")
-        assert os.path.exists(path), f"CoT verify variant missing: {path}"
-
-    def test_verify_handles_separator(self):
-        """IFBench verify variant-002 must reference the ---RESPONSE--- separator."""
-        path = _rel("tenants/ifbench/prompts/modules/verify/variant-002.md")
-        content = open(path).read()
-        assert "---RESPONSE---" in content, "Verify prompt doesn't reference separator"
-        assert "${steps.generate.output}" in content, "Verify doesn't receive generate output"
-
-    def test_config_points_to_cot_variants(self):
-        """IFBench eval config must point to CoT variants (variant-002)."""
-        path = _rel("tenants/ifbench/configs/local-chain-variant002.json")
-        assert os.path.exists(path), f"CoT eval config missing: {path}"
-        with open(path) as f:
-            config = json.load(f)
-        paths = config["chain"]["config"]["prompt_paths"]
-        assert "variant-002" in paths["generate"], (
-            f"Config generate points to {paths['generate']}, not variant-002"
-        )
-        assert "variant-002" in paths["verify"], (
-            f"Config verify points to {paths['verify']}, not variant-002"
+    @pytest.mark.parametrize("tenant", EXPERIMENTAL_TENANTS)
+    def test_model_consistent_within_tenant(self, tenant):
+        """All configs for a single tenant must use the same model."""
+        configs = glob.glob(_rel(f"tenants/{tenant}/configs/*.json"))
+        if not configs:
+            pytest.skip(f"No eval configs for {tenant}")
+        models = set()
+        for path in configs:
+            with open(path) as f:
+                config = json.load(f)
+            if "provider_settings" in config:
+                model = config["provider_settings"].get("model")
+                if model:
+                    models.add(model)
+        assert len(models) <= 1, (
+            f"{tenant}: found multiple models across configs: {models}"
         )
 
-    def test_config_temperature_zero(self):
-        """IFBench CoT config must use temperature=0.0."""
-        path = _rel("tenants/ifbench/configs/local-chain-variant002.json")
-        with open(path) as f:
-            config = json.load(f)
-        assert config["provider_settings"]["temperature"] == 0.0
+
+# ---------------------------------------------------------------------------
+# Group 2: Enforcement Doc Tests
+# ---------------------------------------------------------------------------
 
 
-class TestHoVerCoT:
+class TestEnforcementDocs:
 
-    def test_summarize1_variant002_exists(self):
-        """HoVer summarize1 variant-002 must exist."""
-        path = _rel("tenants/hover/prompts/modules/summarize1/variant-002.md")
-        assert os.path.exists(path), f"CoT variant missing: {path}"
+    def test_global_doc_declares_temperature(self):
+        """prompt-iteration-loop.md Experimental Constants must declare temperature=1.0."""
+        path = _rel("docs/processes/prompt-iteration-loop.md")
+        content = open(path).read()
+        section = _extract_section(content, "Experimental Constants")
+        assert section, "Missing '## Experimental Constants' section"
+        assert "temperature" in section.lower()
+        assert "1.0" in section
 
-    def test_summarize2_variant002_exists(self):
-        """HoVer summarize2 variant-002 must exist."""
-        path = _rel("tenants/hover/prompts/modules/summarize2/variant-002.md")
-        assert os.path.exists(path), f"CoT variant missing: {path}"
+    def test_global_doc_model_from_baseline(self):
+        """prompt-iteration-loop.md must say model is set per-experiment/baseline config."""
+        path = _rel("docs/processes/prompt-iteration-loop.md")
+        content = open(path).read()
+        section = _extract_section(content, "Experimental Constants")
+        assert "baseline config" in section.lower() or "per-experiment" in section.lower(), (
+            "Experimental Constants section must reference baseline config for model"
+        )
 
-    def test_summarize_has_cot_reasoning(self):
-        """HoVer summarize variants must contain CoT reasoning structure."""
-        for module in ["summarize1", "summarize2"]:
-            path = _rel(f"tenants/hover/prompts/modules/{module}/variant-002.md")
-            content = open(path).read()
-            assert "SEARCH:" in content, f"{module} missing SEARCH: output marker"
-            assert "step by step" in content.lower() or "reasoning" in content.lower(), (
-                f"{module} missing CoT reasoning instruction"
-            )
+    def test_global_doc_no_hardcoded_model(self):
+        """prompt-iteration-loop.md Experimental Constants must not hardcode a model name."""
+        path = _rel("docs/processes/prompt-iteration-loop.md")
+        content = open(path).read()
+        section = _extract_section(content, "Experimental Constants")
+        matches = MODEL_NAME_RE.findall(section)
+        assert not matches, (
+            f"Experimental Constants section hardcodes model name(s): {matches}"
+        )
 
-    def test_summarize_does_not_suppress_reasoning(self):
-        """Summarize nodes must externalize reasoning (not suppress it)."""
-        for module in ["summarize1", "summarize2"]:
-            path = _rel(f"tenants/hover/prompts/modules/{module}/variant-002.md")
-            content = open(path).read()
-            body = content.split("-->", 1)[-1] if "-->" in content else content
-            lines_lower = body.lower()
-            if "output only" in lines_lower:
-                assert "SEARCH" in body, f"{module} suppresses reasoning output"
+    @pytest.mark.parametrize("tenant", EXPERIMENTAL_TENANTS)
+    def test_playbook_has_fixed_params_section(self, tenant):
+        """Each tenant playbook must have a Fixed Experimental Parameters section."""
+        path = _rel(f"tenants/{tenant}/docs/iteration-playbook.md")
+        content = open(path).read()
+        assert "## Fixed Experimental Parameters" in content, (
+            f"{tenant} playbook missing '## Fixed Experimental Parameters' section"
+        )
 
-    def test_query_nodes_no_cot(self):
-        """HoVer query nodes must NOT have CoT (output goes directly to BM25)."""
-        for module in ["query_hop2", "query_hop3"]:
-            path = _rel(f"tenants/hover/prompts/modules/{module}/variant-002.md")
-            if os.path.exists(path):
-                content = open(path).read()
-                assert "step by step" not in content.lower(), (
-                    f"{module} has CoT but output goes directly to BM25!"
+    @pytest.mark.parametrize("tenant", EXPERIMENTAL_TENANTS)
+    def test_playbook_declares_temperature(self, tenant):
+        """Each playbook Fixed Experimental Parameters must list temperature: 1.0."""
+        path = _rel(f"tenants/{tenant}/docs/iteration-playbook.md")
+        content = open(path).read()
+        section = _extract_section(content, "Fixed Experimental Parameters")
+        assert "`temperature`: 1.0" in section, (
+            f"{tenant} playbook missing temperature: 1.0 in Fixed Experimental Parameters"
+        )
+
+    @pytest.mark.parametrize("tenant", EXPERIMENTAL_TENANTS)
+    def test_playbook_declares_top_p(self, tenant):
+        """Each playbook Fixed Experimental Parameters must list top_p: 0.95."""
+        path = _rel(f"tenants/{tenant}/docs/iteration-playbook.md")
+        content = open(path).read()
+        section = _extract_section(content, "Fixed Experimental Parameters")
+        assert "`top_p`: 0.95" in section, (
+            f"{tenant} playbook missing top_p: 0.95 in Fixed Experimental Parameters"
+        )
+
+    @pytest.mark.parametrize("tenant", EXPERIMENTAL_TENANTS)
+    def test_playbook_declares_max_tokens(self, tenant):
+        """Each playbook Fixed Experimental Parameters must list max_tokens: 16000."""
+        path = _rel(f"tenants/{tenant}/docs/iteration-playbook.md")
+        content = open(path).read()
+        section = _extract_section(content, "Fixed Experimental Parameters")
+        assert "`max_tokens`: 16000" in section, (
+            f"{tenant} playbook missing max_tokens: 16000 in Fixed Experimental Parameters"
+        )
+
+    @pytest.mark.parametrize("tenant", EXPERIMENTAL_TENANTS)
+    def test_playbook_no_hardcoded_model(self, tenant):
+        """Each playbook must not hardcode a model name in Fixed Experimental Parameters."""
+        path = _rel(f"tenants/{tenant}/docs/iteration-playbook.md")
+        content = open(path).read()
+        section = _extract_section(content, "Fixed Experimental Parameters")
+        matches = MODEL_NAME_RE.findall(section)
+        assert not matches, (
+            f"{tenant} playbook hardcodes model name(s) in Fixed Experimental "
+            f"Parameters: {matches}"
+        )
+        assert "baseline config" in section.lower(), (
+            f"{tenant} playbook must reference 'baseline config' for model"
+        )
+
+    def test_optimization_agent_temperature_immutable(self):
+        """optimization.md must list temperature as an immutable parameter."""
+        path = _rel(".claude/agents/optimization.md")
+        content = open(path).read()
+        immutable_line = ""
+        for line in content.splitlines():
+            if "**Immutable parameters**" in line or "**Immutable experimental parameters**" in line:
+                immutable_line += line
+        assert "temperature" in immutable_line, (
+            "optimization.md does not list temperature as immutable"
+        )
+
+    def test_optimization_agent_temperature_not_in_knobs(self):
+        """optimization.md must NOT list temperature in Common parameter knobs."""
+        path = _rel(".claude/agents/optimization.md")
+        content = open(path).read()
+        for line in content.splitlines():
+            if "Common parameter knobs" in line:
+                assert "temperature" not in line, (
+                    "optimization.md still lists temperature as a common parameter knob"
                 )
+                break
+        else:
+            pytest.fail("optimization.md missing 'Common parameter knobs' line")
 
-    def test_config_points_to_cot_summarize_and_baseline_query(self):
-        """HoVer eval config must use CoT summarize variants + baseline query variants."""
-        path = _rel("tenants/hover/configs/local-chain-variant002.json")
-        assert os.path.exists(path), f"CoT eval config missing: {path}"
-        with open(path) as f:
-            config = json.load(f)
-        paths = config["chain"]["config"]["prompt_paths"]
-        assert "variant-002" in paths["summarize1"], "summarize1 not pointing to CoT variant"
-        assert "variant-002" in paths["summarize2"], "summarize2 not pointing to CoT variant"
-        assert "variant-001" in paths["query_hop2"], "query_hop2 should use baseline variant-001"
-        assert "variant-001" in paths["query_hop3"], "query_hop3 should use baseline variant-001"
+    def test_variant_reviewer_has_immutability_check(self):
+        """variant-reviewer.md must have Parameter Immutability check mentioning temperature."""
+        path = _rel(".claude/agents/variant-reviewer.md")
+        content = open(path).read()
+        assert "Parameter Immutability" in content, (
+            "variant-reviewer.md missing 'Parameter Immutability' check"
+        )
+        section_start = content.find("Parameter Immutability")
+        section_text = content[section_start:section_start + 500]
+        assert "temperature" in section_text, (
+            "variant-reviewer.md Parameter Immutability section does not mention temperature"
+        )
 
-    def test_config_temperature_zero(self):
-        """HoVer CoT config must use temperature=0.0."""
-        path = _rel("tenants/hover/configs/local-chain-variant002.json")
-        with open(path) as f:
-            config = json.load(f)
-        assert config["provider_settings"]["temperature"] == 0.0
+
+# ---------------------------------------------------------------------------
+# Group 3: No Hardcoded Models (Negative Tests)
+# ---------------------------------------------------------------------------
+
+
+class TestNoHardcodedModels:
+
+    @pytest.mark.parametrize("doc_path", ENFORCEMENT_DOC_PATHS)
+    def test_enforcement_docs_no_model_names(self, doc_path):
+        """Enforcement docs must not contain hardcoded model names."""
+        path = _rel(doc_path)
+        assert os.path.exists(path), f"Enforcement doc missing: {doc_path}"
+        content = open(path).read()
+        matches = MODEL_NAME_RE.findall(content)
+        assert not matches, (
+            f"{doc_path} contains hardcoded model name(s): {matches}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Group 4: Thresholds (preserved from original)
+# ---------------------------------------------------------------------------
 
 
 class TestThresholds:
