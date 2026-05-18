@@ -16,6 +16,17 @@ tenants/*/configs/**
 !tenants/hotpotqa/configs/local-chain-variant001-test.json
 !tenants/hotpotqa/configs/remote-chain-variant001-train.json
 !tenants/hotpotqa/configs/remote-chain-variant001-test.json
+!tenants/hover/configs/local-chain-variant001.json
+!tenants/hover/configs/local-chain-variant001-test.json
+!tenants/hover/configs/local-chain-variant002.json
+!tenants/hover/configs/remote-chain-variant001.json
+!tenants/ifbench/configs/local-chain-variant001.json
+!tenants/ifbench/configs/local-chain-variant001-test.json
+!tenants/ifbench/configs/local-chain-variant002.json
+!tenants/livebench_math/configs/local-chain-variant001.json
+!tenants/livebench_math/configs/local-chain-variant001-test.json
+!tenants/papillon/configs/local-chain-variant001.json
+!tenants/papillon/configs/local-chain-variant001-test.json
 tenants/*/reports/**
 !tenants/*/reports/.gitkeep
 reports/evals/tmp/
